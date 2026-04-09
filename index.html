@@ -1,131 +1,138 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista PPCs</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-transparent p-2">
+    <div class="relative bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <!-- Header & Search -->
+        <!-- ADICIONADO: sticky, top-0, z-10, bg-white e to-white -->
+        <div class="sticky top-0 z-10 p-6 border-b border-gray-50 bg-white bg-gradient-to-r from-blue-50/50 to-white">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    PPCs Disponíveis
+                </h2>
+                <span id="file-count" class="text-xs font-semibold text-blue-600 bg-blue-100 px-3 py-1 rounded-full uppercase tracking-wider">
+                    Carregando...
+                </span>
+            </div>
 
+            <div class="relative">
+                <input type="text" id="search-input" placeholder="Pesquisar por nome do curso..." 
+                       class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all text-sm text-gray-700"
+                       oninput="handleSearch()">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-400 absolute left-3 top-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+            </div>
+        </div>
 
-	<script src="https://cdn.tailwindcss.com"></script>
-	<div class="bg-transparent p-2">
-		<style>
-			.custom-scrollbar::-webkit-scrollbar {
-				width: 6px;
-			}
-			.custom-scrollbar::-webkit-scrollbar-track {
-				background: #f1f1f1;
-				border-radius: 10px;
-			}
-			.custom-scrollbar::-webkit-scrollbar-thumb {
-				background: #cbd5e1;
-				border-radius: 10px;
-			}
-			.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-				background: #94a3b8;
-			}
-		</style>
-		<div class="">
-			<!-- Header & Search -->
-			<div class="p-6 border-b border-gray-50 bg-gradient-to-r from-blue-50/50 to-transparent">
-				<div class="flex items-center justify-between mb-4">
-					<h2 class="text-xl font-bold text-gray-800 flex items-center gap-2">
-						<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-						</svg>
-						PPCs Disponíveis
-					</h2>
-					<span id="file-count" class="text-xs font-semibold text-blue-600 bg-blue-100 px-3 py-1 rounded-full uppercase tracking-wider">
-						Carregando...
-					</span>
-				</div>
+        <!-- Lista de Arquivos -->
+        <!-- ADICIONADO: h-[500px] -->
+        <div id="drive-files-list" class="file-container h-[500px] overflow-y-auto p-4 custom-scrollbar space-y-3">
+            <div class="animate-pulse space-y-4">
+                <div class="h-20 bg-gray-50 rounded-xl"></div>
+                <div class="h-20 bg-gray-50 rounded-xl"></div>
+                <div class="h-20 bg-gray-50 rounded-xl"></div>
+            </div>
+        </div>
+    </div>
 
-				<div class="relative">
-					<input type="text" id="search-input" placeholder="Pesquisar por nome do curso..." 
-						   class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all text-sm text-gray-700"
-						   oninput="handleSearch()">
-					<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-400 absolute left-3 top-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-					</svg>
-				</div>
-			</div>
+    <script>
+        const GAS_URL = 'https://script.google.com/macros/s/AKfycbztclXG0qhFa0Y9q_lmcZczzE24hXjcJLvdt8Uh8TIGve9c92bYLWeNVS59RbfP2FZh5A/exec';
+        let allPPCs = [];
 
-			<!-- Lista de Arquivos -->
-			<div id="drive-files-list" class="file-container overflow-y-auto p-4 custom-scrollbar space-y-3">
-				<div class="animate-pulse space-y-4">
-					<div class="h-20 bg-gray-50 rounded-xl"></div>
-					<div class="h-20 bg-gray-50 rounded-xl"></div>
-					<div class="h-20 bg-gray-50 rounded-xl"></div>
-				</div>
-			</div>
-		</div>
+        const PPC_PATTERN = /^\[(.*?)\]\[(.*?)\]\[(.*?)\](?:\.pdf)?$/i;
 
-		<script>
-			const GAS_URL = 'https://script.google.com/macros/s/AKfycbztclXG0qhFa0Y9q_lmcZczzE24hXjcJLvdt8Uh8TIGve9c92bYLWeNVS59RbfP2FZh5A/exec';
-			let allPPCs = [];
+        async function fetchDriveFiles() {
+            const container = document.getElementById('drive-files-list');
+            const countBadge = document.getElementById('file-count');
 
-			// Ajustado para capturar nomes que terminam com .pdf
-			const PPC_PATTERN = /^\[(.*?)\]\[(.*?)\]\[(.*?)\](?:\.pdf)?$/i;
+            try {
+                const response = await fetch(GAS_URL);
+                const rawFiles = await response.json();
+                
+                allPPCs = rawFiles
+                    .map(file => {
+                        const match = file.name.trim().match(PPC_PATTERN);
+                        if (match) {
+                            return {
+                                ...file,
+                                curso: match[1],
+                                ch: match[2],
+                                resolucao: match[3] || 'N/A'
+                            };
+                        }
+                        return null;
+                    })
+                    .filter(item => item !== null);
+                
+                renderFiles(allPPCs);
 
-			async function fetchDriveFiles() {
-				const container = document.getElementById('drive-files-list');
-				const countBadge = document.getElementById('file-count');
+            } catch (error) {
+                container.innerHTML = `<div class="text-center py-20 text-red-500">Erro ao carregar dados.</div>`;
+            }
+        }
 
-				try {
-					const response = await fetch(GAS_URL);
-					const rawFiles = await response.json();
-					
-					allPPCs = rawFiles
-						.map(file => {
-							const match = file.name.trim().match(PPC_PATTERN);
-							if (match) {
-								return {
-									...file,
-									curso: match[1],
-									ch: match[2],
-									resolucao: match[3] || 'N/A' // Caso o terceiro colchete esteja vazio
-								};
-							}
-							return null;
-						})
-						.filter(item => item !== null);
-					
-					renderFiles(allPPCs);
+        function renderFiles(files) {
+            const container = document.getElementById('drive-files-list');
+            const countBadge = document.getElementById('file-count');
+            countBadge.innerText = `${files.length} PPCs encontrados`;
 
-				} catch (error) {
-					container.innerHTML = `<div class="text-center py-20 text-red-500">Erro ao carregar dados.</div>`;
-				}
-			}
+            if (files.length === 0) {
+                container.innerHTML = `<div class="text-center py-20 text-gray-400">Nenhum PPC no padrão encontrado.</div>`;
+                return;
+            }
 
-			function renderFiles(files) {
-				const container = document.getElementById('drive-files-list');
-				const countBadge = document.getElementById('file-count');
-				countBadge.innerText = `${files.length} PPCs encontrados`;
+            container.innerHTML = files.map(file => `
+                <a href="${file.url}" target="_blank" class="group block bg-white border border-gray-100 rounded-xl p-4 hover:border-blue-200 hover:shadow-md transition-all">
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <h3 class="font-bold text-gray-800 group-hover:text-blue-700">${file.curso}</h3>
+                            <div class="flex flex-wrap gap-2 mt-2">
+                                <span class="px-2 py-0.5 rounded text-[10px] font-medium bg-gray-100 text-gray-600">CH: ${file.ch}</span>
+                                <span class="px-2 py-0.5 rounded text-[10px] font-medium bg-blue-50 text-blue-600">RES: ${file.resolucao}</span>
+                            </div>
+                        </div>
+                        <div class="ml-4 p-2 bg-gray-50 rounded-lg group-hover:bg-blue-50">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-400 group-hover:text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                            </svg>
+                        </div>
+                    </div>
+                </a>
+            `).join('');
+        }
 
-				if (files.length === 0) {
-					container.innerHTML = `<div class="text-center py-20 text-gray-400">Nenhum PPC no padrão encontrado.</div>`;
-					return;
-				}
+        function handleSearch() {
+            const term = document.getElementById('search-input').value.toLowerCase();
+            const filtered = allPPCs.filter(ppc => ppc.curso.toLowerCase().includes(term));
+            renderFiles(filtered);
+        }
 
-				container.innerHTML = files.map(file => `
-					<a href="${file.url}" target="_blank" class="group block bg-white border border-gray-100 rounded-xl p-4 hover:border-blue-200 hover:shadow-md transition-all">
-						<div class="flex items-start justify-between">
-							<div class="flex-1">
-								<h3 class="font-bold text-gray-800 group-hover:text-blue-700">${file.curso}</h3>
-								<div class="flex flex-wrap gap-2 mt-2">
-									<span class="px-2 py-0.5 rounded text-[10px] font-medium bg-gray-100 text-gray-600">CH: ${file.ch}</span>
-									<span class="px-2 py-0.5 rounded text-[10px] font-medium bg-blue-50 text-blue-600">RES: ${file.resolucao}</span>
-								</div>
-							</div>
-							<div class="ml-4 p-2 bg-gray-50 rounded-lg group-hover:bg-blue-50">
-								<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-400 group-hover:text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-								</svg>
-							</div>
-						</div>
-					</a>
-				`).join('');
-			}
-
-			function handleSearch() {
-				const term = document.getElementById('search-input').value.toLowerCase();
-				const filtered = allPPCs.filter(ppc => ppc.curso.toLowerCase().includes(term));
-				renderFiles(filtered);
-			}
-
-			window.onload = fetchDriveFiles;
-		</script>
-	</div>
+        window.onload = fetchDriveFiles;
+    </script>
+</body>
+</html>
